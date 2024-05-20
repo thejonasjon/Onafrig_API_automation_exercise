@@ -1,0 +1,487 @@
+{
+	"info": {
+		"_postman_id": "b12f64c5-176c-4238-acc5-9fb9ca4b3283",
+		"name": "Onafrig_API_automation_exercise",
+		"description": "# Onafrig API automation exercise\n\n### Overview\n\nThis project demonstrates API automation by using the [restful-booker API.<br>](https://restful-booker.herokuapp.com)The following actions was perform create, retrieve, and update bookings.\n\n#### Run Collection in Postman\n\n1. **Open Postman**:\n    \n    - Launch the Postman app.\n        \n2. **Import the Collection**:\n    \n    - Click `Import` and upload your collection file (`.json`).\n        \n3. **Import Environment Variables**:\n    \n    - Click `Import` and upload your environment variables file (`.json`).\n        \n4. **Run the Collection**:\n    \n    - Click on the collection name Onafriq__\\*\\\\_.\n        \n    - Click `...` (three dots) and select `Run`.\n        \n    - Configure options (environment, iterations, delay, data).\n        \n    - Click `Run [Onafriq_API_automation_exercise]`.\n        \n5. **View Results**:\n    \n    - Check results in the Collection Runner window.\n        \n\n#### Using Newman\n\n**Prerequisites:**\n\nEnsure Node.js and newman are installed.\n\n`npm install -g newman`\n\n1. **Run the Collection**:\n    \n    - Open terminal.\n        \n    - Navigate to the collection file's directory.\n        \n    - newman run path/to/your-collection.json\n        \n2. **Optional: Specify Environment**:\n    \n    - newman run path/to/your-collection.json -e path/to/your-environment.json\n        \n3. **View Results**:\n    \n    - Check terminal output or open `results.html` for detailed report.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7985029",
+		"_collection_link": "https://crimson-space-2305.postman.co/workspace/Jonaz-Workspace~690c58fb-c297-4c15-ab31-426b9da3fc8a/collection/7985029-b12f64c5-176c-4238-acc5-9fb9ca4b3283?action=share&source=collection_link&creator=7985029"
+	},
+	"item": [
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "Create Booking",
+					"item": [
+						{
+							"name": "Create booking with valid details",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Response Code Validation",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"//Response Header Validation",
+											"pm.test(\"Content-Type is Application/JSON\", function () {",
+											"pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// Get response time and Set threshold for response time milliseconds",
+											"const duration = pm.response.responseTime;",
+											"const time = 1000; ",
+											"",
+											"// Test response time",
+											"pm.test(\"Response time is within acceptable limits\", function () {",
+											"    pm.expect(duration).to.be.below(time);",
+											"});",
+											"",
+											"var bookingData = pm.response.json();",
+											"",
+											"//Validate booking id",
+											"pm.test(\"Response has booking id\", function () {",
+											"    pm.expect(bookingData).to.have.property('bookingid');",
+											"    pm.environment.set(\"bookingId\", bookingData.bookingid);",
+											"});",
+											"",
+											"// Validate the response structure",
+											"pm.test(\"Response structure is valid\", function () {",
+											"    pm.expect(bookingData).to.be.an(\"object\");",
+											"    pm.expect(bookingData).to.have.property(\"bookingid\");",
+											"    pm.expect(bookingData).to.have.property(\"booking\");",
+											"    pm.expect(bookingData.booking).to.be.an(\"object\");",
+											"});",
+											"",
+											"// format date to be in YY-MM-DD",
+											"function formatDate(dateString) {",
+											"    let date = new Date(dateString);",
+											"    let year = date.getFullYear();",
+											"    let month = (date.getMonth() + 1).toString().padStart(2, '0');",
+											"    let day = date.getDate().toString().padStart(2, '0');",
+											"    return `${year}-${month}-${day}`;",
+											"}",
+											"",
+											"// Validate the values of the fields",
+											"pm.test(\"Response has correct booking details\", function () {",
+											"    pm.expect(bookingData.booking[\"firstname\"]).to.eql(pm.collectionVariables.get(\"randomFirstName\"));",
+											"    pm.expect(bookingData.booking[\"lastname\"]).to.eql(pm.collectionVariables.get(\"randomLastName\"));",
+											"    pm.expect(bookingData.booking[\"totalprice\"]).to.be.equal(pm.variables.get(\"randomTotalPrice\"));",
+											"    pm.expect(bookingData.booking[\"bookingdates\"][\"checkin\"]).to.be.equal(formatDate(pm.variables.get(\"randomCheckinDate\")));",
+											"    pm.expect(bookingData.booking[\"bookingdates\"][\"checkout\"]).to.be.equal(formatDate(pm.variables.get(\"randomCheckoutDate\")));",
+											"    pm.expect(bookingData.booking[\"additionalneeds\"]).to.be.equal(pm.variables.get(\"randomAdditionalNeeds\"));",
+											"});",
+											"",
+											"// Get booking id from response and store",
+											"pm.collectionVariables.set(\"bookID\", pm.variables.replaceIn(bookingData.bookingid));",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Generate and store random firstname",
+											"pm.collectionVariables.set(\"randomFirstName\", pm.collectionVariables.replaceIn(\"{{$randomFirstName}}\"));",
+											"",
+											"// Generate and store random lastname",
+											"pm.collectionVariables.set(\"randomLastName\", pm.variables.replaceIn(\"{{$randomLastName}}\"));",
+											"",
+											"// Generate and store totalprice",
+											"let randomTotalPrice = _.random(100,999);",
+											"pm.environment.set(\"randomTotalPrice\", pm.variables.replaceIn(randomTotalPrice));",
+											"",
+											"// Generate and store random check-in and check-out dates",
+											"pm.collectionVariables.set(\"randomCheckinDate\", pm.variables.replaceIn(\"{{$randomDateRecent}}\"));",
+											"pm.collectionVariables.set(\"randomCheckoutDate\", pm.variables.replaceIn(\"{{$randomDateFuture}}\"));",
+											"",
+											"// Generate and store random additional needs",
+											"let randomAdditionalNeeds = Math.floor(Math.random() * 5) + 1 + \" Breakfasts\";",
+											"pm.collectionVariables.set(\"randomAdditionalNeeds\", pm.variables.replaceIn(randomAdditionalNeeds));",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"firstname\": \"{{randomFirstName}}\",\n    \"lastname\": \"{{randomLastName}}\",\n    \"totalprice\": {{randomTotalPrice}},\n    \"depositpaid\": {{randomDepositPaid}},\n    \"bookingdates\": {\n        \"checkin\": \"{{randomCheckinDate}}\",\n        \"checkout\": \"{{randomCheckoutDate}}\"\n    },\n    \"additionalneeds\": \"{{randomAdditionalNeeds}}\"\n}\n\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/booking",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"booking"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Booking",
+					"item": [
+						{
+							"name": "Get booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Response Code Validation",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"//Response Header Validation",
+											"pm.test(\"Content-Type is Application/JSON\", function () {",
+											"pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// Get response time and Set threshold for response time milliseconds",
+											"const duration = pm.response.responseTime;",
+											"const time = 1000; ",
+											"",
+											"// Test response time",
+											"pm.test(\"Response time is within acceptable limits\", function () {",
+											"    pm.expect(duration).to.be.below(time);",
+											"});",
+											"",
+											"let bookingData = pm.response.json();",
+											"",
+											"// Validate the booking fields",
+											"pm.test(\"Response has correct updated booking fields\", function () {",
+											"    pm.expect(bookingData).to.have.property(\"firstname\");",
+											"    pm.expect(bookingData).to.have.property(\"lastname\");",
+											"    pm.expect(bookingData).to.have.property(\"totalprice\");",
+											"    pm.expect(bookingData).to.have.property(\"depositpaid\");",
+											"    pm.expect(bookingData).to.have.property(\"bookingdates\");",
+											"    pm.expect(bookingData.bookingdates).to.have.property(\"checkin\");",
+											"    pm.expect(bookingData.bookingdates).to.have.property(\"checkout\");",
+											"    pm.expect(bookingData).to.have.property(\"additionalneeds\");",
+											"});",
+											"",
+											"// Validate the response structure",
+											"pm.test(\"Response structure is valid\", function () {",
+											"    pm.expect(bookingData).to.be.an(\"object\");",
+											"    pm.expect(bookingData.bookingdates).to.be.an(\"object\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/booking/{{bookingId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"booking",
+										"{{bookingId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get booking with invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Response Code Validation",
+											"pm.test(\"Status code is 404 Not Found\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"// Get response time and Set threshold for response time milliseconds",
+											"const duration = pm.response.responseTime;",
+											"const time = 1000; ",
+											"",
+											"// Test response time",
+											"pm.test(\"Response time is within acceptable limits\", function () {",
+											"    pm.expect(duration).to.be.below(time);",
+											"});",
+											"",
+											"// Validate the response structure",
+											"pm.test(\"Response structure is valid\", function () {",
+											"pm.expect(pm.response.text()).to.eql(\"Not Found\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/booking/3546644888",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"booking",
+										"3546644888"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update Booking",
+					"item": [
+						{
+							"name": "Update booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Response Code Validation",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"//Response Header Validation",
+											"pm.test(\"Content-Type is Application/JSON\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// Test response time",
+											"pm.test(\"Response time is within acceptable limits\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+											"});",
+											"",
+											"var bookingData = pm.response.json();",
+											"",
+											"// Validate the response structure",
+											"pm.test(\"Response structure is valid and contains booking id and booking object\", function () {",
+											"    pm.expect(bookingData).to.be.an(\"object\")",
+											"    pm.expect(bookingData.bookingdates).to.be.an(\"object\");",
+											"});",
+											"",
+											"// format date to be in YY-MM-DD",
+											"function formatDate(dateString) {",
+											"    let date = new Date(dateString);",
+											"    let year = date.getFullYear();",
+											"    let month = (date.getMonth() + 1).toString().padStart(2, '0');",
+											"    let day = date.getDate().toString().padStart(2, '0');",
+											"    return `${year}-${month}-${day}`;",
+											"}",
+											"",
+											"// Validate the values of the fields",
+											"pm.test(\"Response has correct booking details\", function () {",
+											"    pm.expect(bookingData.booking[\"firstname\"]).to.eql(pm.collectionVariables.get(\"randomFirstName\"));",
+											"    pm.expect(bookingData.booking[\"lastname\"]).to.eql(pm.collectionVariables.get(\"randomLastName\"));",
+											"    pm.expect(bookingData.booking[\"totalprice\"]).to.be.equal(pm.variables.get(\"randomTotalPrice\"));",
+											"    pm.expect(bookingData.booking[\"bookingdates\"][\"checkin\"]).to.be.equal(formatDate(pm.variables.get(\"randomCheckinDate\")));",
+											"    pm.expect(bookingData.booking[\"bookingdates\"][\"checkout\"]).to.be.equal(formatDate(pm.variables.get(\"randomCheckoutDate\")));",
+											"    pm.expect(bookingData.booking[\"additionalneeds\"]).to.be.equal(pm.variables.get(\"randomAdditionalNeeds\"));",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Generate and store random check-in and check-out dates",
+											"pm.collectionVariables.set(\"randomCheckoutDate\", pm.variables.replaceIn(\"{{$randomDateFuture}}\"));",
+											"",
+											"// Generate and store random additional needs",
+											"let randomAdditionalNeeds = Math.floor(Math.random() * 5) + 1 + \" Breakfasts\";",
+											"pm.collectionVariables.set(\"randomAdditionalNeeds\", pm.variables.replaceIn(randomAdditionalNeeds));",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"bookingdates\": {\n        \"checkout\": \"{{randomCheckoutDate}}\"\n    },\n    \"additionalneeds\": \"Breakfasts\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/booking/{{bookingId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"booking",
+										"{{bookingId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update booking with invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Response Code Validation",
+											"pm.test(\"Status code is 404 Not Found\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"// Get response time and Set threshold for response time milliseconds",
+											"const duration = pm.response.responseTime;",
+											"const time = 1000; ",
+											"",
+											"// Test response time",
+											"pm.test(\"Response time is within acceptable limits\", function () {",
+											"    pm.expect(duration).to.be.below(time);",
+											"});",
+											"",
+											"// Validate the response structure",
+											"pm.test(\"Response structure is valid\", function () {",
+											"pm.expect(pm.response.text()).to.eql(\"Not Found\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"bookingdates\": {\n        \"checkout\": \"{{randomCheckoutDate}}\"\n    },\n    \"additionalneeds\": \"Breakfasts\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/booking/dhhddeyyryryr",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"booking",
+										"dhhddeyyryryr"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "## BaseURL\n\nbaseUrl: [https://restful-booker.herokuapp.com](https://restful-booker.herokuapp.com).\n\n## Endpoints\n\n### 1\\. Create a Booking\n\n**Endpoint:** `POST /booking`\n\n**Description:** Creates a new booking with the provided details.\n\n**Request Body:**\n\n`firstname`:\n\n`lastname`:\n\n`totalprice`:\n\n`depositpaid`:\n\n`bookingdates`:\n\n`additionalneeds`:\n\n### 2\\. Get Booking\n\n**Endpoint:** `GET /booking/:id`\n\n**Description:** Retrieves the details of a booking by its ID.\n\n### 3\\. Update Booking\n\n**Endpoint:** `PATCH /booking/:id`\n\n**Description:** Updates the details of an existing booking.\n\n**Request Body:**\n\n`bookingdates`:\n\n`additionalneeds`:"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		},
+		{
+			"key": "randomFirstName",
+			"value": ""
+		},
+		{
+			"key": "randomLastName",
+			"value": ""
+		},
+		{
+			"key": "randomDepositPaid",
+			"value": ""
+		},
+		{
+			"key": "randomCheckinDate",
+			"value": ""
+		},
+		{
+			"key": "randomCheckoutDate",
+			"value": ""
+		},
+		{
+			"key": "randomAdditionalNeeds",
+			"value": ""
+		},
+		{
+			"key": "bookID",
+			"value": ""
+		}
+	]
+}
