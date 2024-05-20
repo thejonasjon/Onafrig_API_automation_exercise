@@ -1,4 +1,3 @@
-```markdown
 # Onafrig API Automation Exercise
 
 ## Overview
@@ -29,7 +28,7 @@ This project demonstrates API automation by using the restful-booker API. The fo
 
 ### Prerequisites:
 - Ensure Node.js and newman are installed.
-  ```bash
+  ```sh
   npm install -g newman
   ```
 
@@ -37,16 +36,15 @@ This project demonstrates API automation by using the restful-booker API. The fo
 - Open terminal.
 - Navigate to the collection file's directory.
 - Run Newman:
-  ```bash
+  ```sh
   newman run path/to/your-collection.json
   ```
 
 ### Optional: Specify Environment:
 - Run Newman with environment variables:
-  ```bash
+  ```sh
   newman run path/to/Onafrig_API_automation_exercise.postman_collection.json -e path/to/Onafriq_.postman_environment.json
   ```
 
 ### View Results:
 - Check terminal output or open results.html for detailed report.
-```
