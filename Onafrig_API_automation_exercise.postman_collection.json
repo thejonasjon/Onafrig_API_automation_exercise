@@ -5,7 +5,7 @@
 		"description": "# Onafrig API automation exercise\n\n### Overview\n\nThis project demonstrates API automation by using the [restful-booker API.<br>](https://restful-booker.herokuapp.com)The following actions was perform create, retrieve, and update bookings.\n\n#### Run Collection in Postman\n\n1. **Open Postman**:\n    \n    - Launch the Postman app.\n        \n2. **Import the Collection**:\n    \n    - Click `Import` and upload your collection file (`.json`).\n        \n3. **Import Environment Variables**:\n    \n    - Click `Import` and upload your environment variables file (`.json`).\n        \n4. **Run the Collection**:\n    \n    - Click on the collection name Onafriq__\\*\\\\_.\n        \n    - Click `...` (three dots) and select `Run`.\n        \n    - Configure options (environment, iterations, delay, data).\n        \n    - Click `Run [Onafriq_API_automation_exercise]`.\n        \n5. **View Results**:\n    \n    - Check results in the Collection Runner window.\n        \n\n#### Using Newman\n\n**Prerequisites:**\n\nEnsure Node.js and newman are installed.\n\n`npm install -g newman`\n\n1. **Run the Collection**:\n    \n    - Open terminal.\n        \n    - Navigate to the collection file's directory.\n        \n    - newman run path/to/your-collection.json\n        \n2. **Optional: Specify Environment**:\n    \n    - newman run path/to/your-collection.json -e path/to/your-environment.json\n        \n3. **View Results**:\n    \n    - Check terminal output or open `results.html` for detailed report.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "7985029",
-		"_collection_link": "https://crimson-space-2305.postman.co/workspace/Jonaz-Workspace~690c58fb-c297-4c15-ab31-426b9da3fc8a/collection/7985029-b12f64c5-176c-4238-acc5-9fb9ca4b3283?action=share&source=collection_link&creator=7985029"
+		"_collection_link": "https://crimson-space-2305.postman.co/workspace/Jon~c16323cc-0cdb-464e-86ea-a2ba37c57706/collection/7985029-b12f64c5-176c-4238-acc5-9fb9ca4b3283?action=share&source=collection_link&creator=7985029"
 	},
 	"item": [
 		{
@@ -95,7 +95,7 @@
 											"",
 											"// Generate and store totalprice",
 											"let randomTotalPrice = _.random(100,999);",
-											"pm.environment.set(\"randomTotalPrice\", pm.variables.replaceIn(randomTotalPrice));",
+											"pm.collectionVariables.set(\"randomTotalPrice\", pm.variables.replaceIn(randomTotalPrice));",
 											"",
 											"// Generate and store random check-in and check-out dates",
 											"pm.collectionVariables.set(\"randomCheckinDate\", pm.variables.replaceIn(\"{{$randomDateRecent}}\"));",
@@ -116,7 +116,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"firstname\": \"{{randomFirstName}}\",\n    \"lastname\": \"{{randomLastName}}\",\n    \"totalprice\": {{randomTotalPrice}},\n    \"depositpaid\": {{randomDepositPaid}},\n    \"bookingdates\": {\n        \"checkin\": \"{{randomCheckinDate}}\",\n        \"checkout\": \"{{randomCheckoutDate}}\"\n    },\n    \"additionalneeds\": \"{{randomAdditionalNeeds}}\"\n}\n\n",
+									"raw": "{\n    \"firstname\": \"{{randomFirstName}}\",\n    \"lastname\": \"{{randomLastName}}\",\n    \"totalprice\": {{randomTotalPrice}},\n    \"depositpaid\": {{randomTotalPrice}},\n    \"bookingdates\": {\n        \"checkin\": \"{{randomCheckinDate}}\",\n        \"checkout\": \"{{randomCheckoutDate}}\"\n    },\n    \"additionalneeds\": \"{{randomAdditionalNeeds}}\"\n}\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -448,23 +448,11 @@
 	],
 	"variable": [
 		{
-			"key": "id",
-			"value": "1"
-		},
-		{
-			"key": "base_url",
-			"value": "https://postman-rest-api-learner.glitch.me/"
-		},
-		{
 			"key": "randomFirstName",
 			"value": ""
 		},
 		{
 			"key": "randomLastName",
-			"value": ""
-		},
-		{
-			"key": "randomDepositPaid",
 			"value": ""
 		},
 		{
@@ -481,6 +469,10 @@
 		},
 		{
 			"key": "bookID",
+			"value": ""
+		},
+		{
+			"key": "randomTotalPrice",
 			"value": ""
 		}
 	]
